@@ -27,8 +27,19 @@ ENTRY = (
     "Sarah — ClearBooks Bookkeeping"
 )
 
+# The brief asks for about 120 words, subject line included. Guard the
+# count at runtime so a future wording tweak that drifts off-brief fails
+# loudly instead of silently submitting a wrong-length email.
+WORD_TARGET = 120
+WORD_WINDOW = 10
+
 
 def main() -> None:
+    words = ENTRY.split()
+    if not WORD_TARGET - WORD_WINDOW <= len(words) <= WORD_TARGET + WORD_WINDOW:
+        raise ValueError(
+            f"entry is {len(words)} words, expected about {WORD_TARGET}"
+        )
     out_dir = os.environ.get("OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
